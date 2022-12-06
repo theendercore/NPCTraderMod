@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "npctrader",
+  "version": "${version}",
+  "name": "NPC Trader Mod",
+  "description": "Adds npsc to the game",
+  "authors": [
+    "Ender"
+  ],
+  "license": "MIT",
+  "icon": "assets/npctrader/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "com.theendercore.npctrader.NPCTraderKt::onInitialize"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "com.theendercore.npctrader.NPCTraderKt::onClientInitialize"
+      }
+    ]
+  },
+  "mixins": [
+    "npctrader.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric-api": "*",
+    "fabric-language-kotlin": ">=1.8.5+kotlin.1.7.20",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  }
+}

@@ -1,5 +1,6 @@
 package com.theendercore.npctrader.screen
 
+import com.theendercore.npctrader.trades.EntityTradeList
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.gui.screen.Screen
@@ -9,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 
 @Environment(EnvType.CLIENT)
-class TraderScreen constructor(private val traderName: Text) : Screen(NarratorManager.EMPTY) {
+class TraderScreen constructor(private val traderName: Text, private val trades: EntityTradeList) : Screen(NarratorManager.EMPTY) {
     private var closeButton: ButtonWidget? = null
     private var open = true
 
@@ -31,8 +32,10 @@ class TraderScreen constructor(private val traderName: Text) : Screen(NarratorMa
 
     override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
         this.renderBackground(matrices)
-        drawCenteredText(matrices, textRenderer, traderName, width / 2, 70, 16777215)
-
+        drawCenteredText(matrices, textRenderer, traderName, width / 3, height/8, 0xffffff)
+        for( x in trades){
+            drawCenteredText(matrices, textRenderer, Text.of(x?.price.toString()), width / 2, height/2, 0x0fffff)
+        }
 
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)

@@ -1,5 +1,7 @@
 package com.theendercore.npctrader.entity
 
+import com.theendercore.npctrader.trades.EntityTradeList
+import com.theendercore.npctrader.trades.TradeManager
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.*
@@ -32,6 +34,7 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
 
     private val aFactory = AnimationFactory(this)
     private val name: Text = Text.translatable("npctrader.trader.$profession.name")
+    private val trades: EntityTradeList? = TradeManager.getTrades(TraderEntities.TRADER)
 
 
     override fun initGoals() {
@@ -53,8 +56,8 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
                 ILoopType.EDefaultLoopTypes.LOOP as ILoopType))
             return PlayState.CONTINUE
         }
-        event.controller.setAnimation(AnimationBuilder().clearAnimations())
-        return PlayState.CONTINUE
+//        event.controller.setAnimation(AnimationBuilder().clearAnimations())
+        return PlayState.STOP
     }
 
     override fun registerControllers(animationData: AnimationData) {
@@ -83,14 +86,7 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
 
     override fun interactMob(player: PlayerEntity, hand: Hand?): ActionResult? {
         if (world.isClient) {
-            (player as IPlayerTradeWithNPC).tradeWithNPC(this.name)
-//            player.client.setScreen(TraderScreen(player))
-//            val optionalInt =
-//                player.openHandledScreen(SimpleNamedScreenHandlerFactory({ syncId: Int, _: PlayerInventory?, playerE: PlayerEntity ->
-//                    TraderScreenHandler(
-//                        syncId, playerE, this
-//                    )
-//                }, Text.of("hi")))
+            (player as IPlayerTradeWithNPC).tradeWithNPC(this.name, this.trades)
         }
         player.playSound(SoundEvents.ENTITY_VILLAGER_TRADE, 1F, 1F)
         return ActionResult.success(world.isClient)

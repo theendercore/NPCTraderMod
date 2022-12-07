@@ -2,6 +2,7 @@ package com.theendercore.npctrader.mixin;
 
 import com.theendercore.npctrader.entity.IPlayerTradeWithNPC;
 import com.theendercore.npctrader.screen.TraderScreen;
+import com.theendercore.npctrader.trades.EntityTradeList;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
@@ -11,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public class ClientPlayerEntityMixin implements IPlayerTradeWithNPC {
     MinecraftClient client;
 
-    public void tradeWithNPC(Text name) {
-        client.setScreen(new TraderScreen(name));
+    public void tradeWithNPC(Text name, EntityTradeList trades) {
+        client.setScreen(new TraderScreen(name, trades));
     }
 }

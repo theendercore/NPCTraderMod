@@ -3,6 +3,7 @@ package com.theendercore.npctrader
 import com.theendercore.npctrader.entity.TraderEntities
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.entity.client.TraderRenderer
+import com.theendercore.npctrader.trades.TradeManager
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
@@ -27,16 +28,10 @@ fun id(path: String): Identifier = Identifier(MODID, path)
 val TRADER_SPAWN_EGG =
     SpawnEggItem(TraderEntities.TRADER, 0xffffff, 0x000000, FabricItemSettings().group(ItemGroup.MISC).maxCount(3))
 
-/*
-val TRADER_SCREEN_HANDLER: ScreenHandlerType<TraderScreenHandler> = Registry.register(
-    Registry.SCREEN_HANDLER,
-    id("trader"),
-    ScreenHandlerType{ syncId: Int, inventory: PlayerInventory? ->
-        TraderScreenHandler(syncId, inventory)
-    })
-*/
-
 val DOLLAR = DollarItem(FabricItemSettings().group(ItemGroup.MISC))
+
+
+
 
 @Suppress("unused")
 fun onInitialize() {
@@ -45,17 +40,19 @@ fun onInitialize() {
     GeckoLib.initialize()
     Registry.register(Registry.ITEM, id("trader_spawn_egg"), TRADER_SPAWN_EGG)
     Registry.register(Registry.ITEM, id("dollar"), DOLLAR)
+
     FabricDefaultAttributeRegistry.register(TraderEntities.TRADER, TraderEntity.setAttributes())
+    TradeManager.registerTrader(TraderEntities.TRADER)
 }
+
+
+
+
+
 
 @Suppress("unused")
 fun onClientInitialize() {
     LOGGER.info(":gun: Client")
 
-    EntityRendererRegistry.register(TraderEntities.TRADER) { context: EntityRendererFactory.Context? ->
-        TraderRenderer(
-            context
-        )
-    }
-
+    EntityRendererRegistry.register(TraderEntities.TRADER) { c: EntityRendererFactory.Context? -> TraderRenderer(c) }
 }

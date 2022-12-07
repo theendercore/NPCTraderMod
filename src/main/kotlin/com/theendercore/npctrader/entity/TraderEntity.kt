@@ -19,6 +19,7 @@ import net.minecraft.world.World
 import software.bernie.geckolib3.core.IAnimatable
 import software.bernie.geckolib3.core.PlayState
 import software.bernie.geckolib3.core.builder.AnimationBuilder
+import software.bernie.geckolib3.core.builder.ILoopType
 import software.bernie.geckolib3.core.controller.AnimationController
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent
 import software.bernie.geckolib3.core.manager.AnimationData
@@ -48,7 +49,8 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
 
     private fun <E : IAnimatable?> predicate(event: AnimationEvent<E>): PlayState {
         if (event.isMoving) {
-            event.controller.setAnimation(AnimationBuilder().addAnimation("animation.trader.walk", true))
+            event.controller.setAnimation(AnimationBuilder().addAnimation("animation.trader.walk",
+                ILoopType.EDefaultLoopTypes.LOOP as ILoopType))
             return PlayState.CONTINUE
         }
         event.controller.setAnimation(AnimationBuilder().clearAnimations())

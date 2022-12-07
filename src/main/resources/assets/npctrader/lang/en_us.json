@@ -1,4 +1,6 @@
 {
   "item.npctrader.trader_spawn_egg": "Trader Spawn Egg",
-  "item.npctrader.dollar": "Dollar"
+  "item.npctrader.dollar": "Dollar",
+
+  "npctrader.trader.butcher.name": "Butcher"
 }

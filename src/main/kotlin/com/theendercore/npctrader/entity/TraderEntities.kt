@@ -13,6 +13,6 @@ object TraderEntities {
         id("trader"),
         FabricEntityTypeBuilder.create<TraderEntity>(
             SpawnGroup.CREATURE
-        ) { entityType: EntityType<TraderEntity?>?, world: World? -> TraderEntity(entityType, world) }
+        ) { entityType: EntityType<TraderEntity?>?, world: World? -> TraderEntity(entityType, world, "butcher") }
             .dimensions(EntityDimensions(0.6f, 2f, true)).build())
 }

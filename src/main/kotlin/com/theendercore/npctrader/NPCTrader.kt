@@ -17,12 +17,24 @@ import software.bernie.geckolib3.GeckoLib
 
 
 const val MODID: String = "npctrader"
+
 @JvmField
 val LOGGER: Logger = LoggerFactory.getLogger(MODID)
 
 fun id(path: String): Identifier = Identifier(MODID, path)
 
-val TRADER_SPAWN_EGG = SpawnEggItem(TraderEntities.TRADER, 0xffffff, 0x000000, FabricItemSettings().group(ItemGroup.MISC).maxCount(3))
+@JvmField
+val TRADER_SPAWN_EGG =
+    SpawnEggItem(TraderEntities.TRADER, 0xffffff, 0x000000, FabricItemSettings().group(ItemGroup.MISC).maxCount(3))
+
+/*
+val TRADER_SCREEN_HANDLER: ScreenHandlerType<TraderScreenHandler> = Registry.register(
+    Registry.SCREEN_HANDLER,
+    id("trader"),
+    ScreenHandlerType{ syncId: Int, inventory: PlayerInventory? ->
+        TraderScreenHandler(syncId, inventory)
+    })
+*/
 
 val DOLLAR = DollarItem(FabricItemSettings().group(ItemGroup.MISC))
 
@@ -40,6 +52,10 @@ fun onInitialize() {
 fun onClientInitialize() {
     LOGGER.info(":gun: Client")
 
-    EntityRendererRegistry.register(TraderEntities.TRADER){context: EntityRendererFactory.Context? -> TraderRenderer(context)}
+    EntityRendererRegistry.register(TraderEntities.TRADER) { context: EntityRendererFactory.Context? ->
+        TraderRenderer(
+            context
+        )
+    }
 
 }

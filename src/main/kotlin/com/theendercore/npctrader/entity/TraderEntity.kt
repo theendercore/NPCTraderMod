@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
+import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
@@ -25,10 +26,11 @@ import software.bernie.geckolib3.core.manager.AnimationFactory
 import java.util.*
 
 @Suppress("DEPRECATION")
-class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, world: World?) :
+class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, world: World?, profession: String) :
     PassiveEntity(entityType, world), IAnimatable {
 
     private val aFactory = AnimationFactory(this)
+    private val name: Text = Text.translatable("npctrader.trader.$profession.name")
 
 
     override fun initGoals() {
@@ -78,9 +80,17 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
     }
 
     override fun interactMob(player: PlayerEntity, hand: Hand?): ActionResult? {
-        if (!world.isClient) {
-            TODO()
+        if (world.isClient) {
+            (player as IPlayerTradeWithNPC).tradeWithNPC(this.name)
+//            player.client.setScreen(TraderScreen(player))
+//            val optionalInt =
+//                player.openHandledScreen(SimpleNamedScreenHandlerFactory({ syncId: Int, _: PlayerInventory?, playerE: PlayerEntity ->
+//                    TraderScreenHandler(
+//                        syncId, playerE, this
+//                    )
+//                }, Text.of("hi")))
         }
+        player.playSound(SoundEvents.ENTITY_VILLAGER_TRADE, 1F, 1F)
         return ActionResult.success(world.isClient)
     }
 

@@ -1,7 +1,7 @@
 package com.theendercore.npctrader.mixin;
 
 
-import com.theendercore.npctrader.entity.IEntityData;
+import com.theendercore.npctrader.entity.IEntityCurrency;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin implements IEntityData {
+public abstract class EntityMixin implements IEntityCurrency {
     private long currency = 0L;
 
     @Override

@@ -1,0 +1,44 @@
+{
+  "trades": [
+    {
+      "item": "minecraft:diamond",
+      "price": 10
+    },
+    {
+      "item": "minecraft:iron_ingot",
+      "price": 5
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "price": 7
+    },
+    {
+      "item": "minecraft:oak_planks",
+      "price": 1
+    },
+    {
+      "item": "minecraft:birch_planks",
+      "price": 1
+    },
+    {
+      "item": "minecraft:tnt",
+      "price": 16
+    },
+    {
+      "item": "minecraft:lever",
+      "price": 3
+    },
+    {
+      "item": "minecraft:stone",
+      "price": 2
+    },
+    {
+      "item": "minecraft:slime_block",
+      "price": 6
+    },
+    {
+      "item": "minecraft:honey_block",
+      "price": 6
+    }
+  ]
+}

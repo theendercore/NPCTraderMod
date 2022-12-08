@@ -2,7 +2,6 @@ package com.theendercore.npctrader.trades
 
 import net.minecraft.item.ItemStack
 
-
-class EntityTrade(val item: ItemStack, val price: Long)
+class Trade(val itemStack: ItemStack, val price: Int)
 
 

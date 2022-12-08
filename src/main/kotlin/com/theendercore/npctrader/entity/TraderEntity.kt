@@ -1,6 +1,6 @@
 package com.theendercore.npctrader.entity
 
-import com.theendercore.npctrader.trades.EntityTradeList
+import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityType
@@ -34,7 +34,7 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
 
     private val aFactory = AnimationFactory(this)
     private val name: Text = Text.translatable("npctrader.trader.$profession.name")
-    private val trades: EntityTradeList? = TradeManager.getTrades(TraderEntities.TRADER)
+    private val trades: TradeList? = TradeManager.getTrades(TraderEntities.TRADER)
 
 
     override fun initGoals() {

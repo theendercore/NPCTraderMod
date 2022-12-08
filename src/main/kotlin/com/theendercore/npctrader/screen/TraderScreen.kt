@@ -11,7 +11,7 @@ import net.minecraft.text.Text
 
 @Environment(EnvType.CLIENT)
 class TraderScreen constructor(private val traderName: Text, private val trades: TradeList) :
-    Screen(NarratorManager.EMPTY) {
+    Screen(NarratorManager.EMPTY){
     private var closeButton: ButtonWidget? = null
     private var open = true
 
@@ -28,7 +28,9 @@ class TraderScreen constructor(private val traderName: Text, private val trades:
                 { _: ButtonWidget? -> close() },
                 { _: ButtonWidget, matrices: MatrixStack, x: Int, y: Int ->
                     val text = Text.of("Close the menu")
-                    drawTextWithShadow(matrices, textRenderer, text, x - (text.toString().length / 2), y + 20, 0x0fff0f)
+                    drawTextWithShadow(
+                        matrices, textRenderer, text, x - ((text.toString().length/2)* 3.5).toInt(), y + 20, 0x9f9f9f
+                    )
                 })
         ) as ButtonWidget)
 
@@ -39,15 +41,18 @@ class TraderScreen constructor(private val traderName: Text, private val trades:
         this.renderBackground(matrices)
         drawCenteredText(matrices, textRenderer, traderName, width / 3, height / 8, 0xffffff)
         for (trade in trades) {
+            val xOne = width / 4
+            val yOne = height / 2 + ((trades.indexOf(trade) - 1) * 15)
+            itemRenderer.renderInGuiWithOverrides(trade?.itemStack, xOne-15, yOne-5)
             drawCenteredText(
                 matrices,
                 textRenderer,
-                Text.translatable(trade?.itemStack?.item?.translationKey).append(" ")
-                    .append(Text.translatable("npctrader.currency.symbol")).append(" " + trade?.price.toString()),
-                width / 3,
-                height / 2 + ((trades.indexOf(trade) - 1) * 10),
+                Text.translatable("npctrader.currency.symbol").append(" " + trade?.price.toString()),
+                xOne+15,
+                yOne,
                 0x0fffff
             )
+
         }
 
         //Don't remove this u fool

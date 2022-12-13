@@ -1,7 +1,10 @@
 package com.theendercore.npctrader.entity
 
+import com.theendercore.npctrader.networking.packet.ModPackets
+import com.theendercore.npctrader.networking.packet.s2c.TradeMenuS2CPacket
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.block.BlockState
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.*
@@ -10,10 +13,10 @@ import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.passive.PassiveEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
-import net.minecraft.text.Text
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
 import net.minecraft.util.math.BlockPos
@@ -29,12 +32,11 @@ import software.bernie.geckolib3.core.manager.AnimationFactory
 import java.util.*
 
 @Suppress("DEPRECATION")
-class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, world: World?, profession: String) :
+class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, world: World?) :
     PassiveEntity(entityType, world), IAnimatable {
 
     private val aFactory = AnimationFactory(this)
-    private val name: Text = Text.translatable("npctrader.trader.$profession.name")
-    private val trades: TradeList? = TradeManager.getTrades(TraderEntities.TRADER)
+    val trades: TradeList? = TradeManager.getTrades(TraderEntities.BUTCHER)
 
 
     override fun initGoals() {
@@ -43,12 +45,9 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
         goalSelector.add(2, WanderAroundFarGoal(this, 1.0))
         goalSelector.add(3, LookAroundGoal(this))
         goalSelector.add(4, LookAtEntityGoal(this, PlayerEntity::class.java, 8F))
+
     }
 
-    override fun createChild(world: ServerWorld, entity: PassiveEntity): PassiveEntity? {
-
-        return null
-    }
 
     private fun <E : IAnimatable?> predicate(event: AnimationEvent<E>): PlayState {
         if (event.isMoving) {
@@ -56,7 +55,7 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
                 ILoopType.EDefaultLoopTypes.LOOP as ILoopType))
             return PlayState.CONTINUE
         }
-//        event.controller.setAnimation(AnimationBuilder().clearAnimations())
+        event.controller.setAnimation(AnimationBuilder().clearAnimations())
         return PlayState.STOP
     }
 
@@ -85,11 +84,15 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
     }
 
     override fun interactMob(player: PlayerEntity, hand: Hand?): ActionResult? {
-        if (world.isClient) {
-            (player as IPlayerTradeWithNPC).tradeWithNPC(this.name, this.trades)
+        if (!world.isClient) {
+            ServerPlayNetworking.send(player as ServerPlayerEntity?, ModPackets.START_TRADE, TradeMenuS2CPacket((player as IEntityCurrency).getCurrency(), this.id).toBuf())
         }
-        player.playSound(SoundEvents.ENTITY_VILLAGER_TRADE, 1F, 1F)
+        player.playSound(SoundEvents.ENTITY_FOX_SCREECH, 1F, 1F)
         return ActionResult.success(world.isClient)
+    }
+
+    override fun createChild(world: ServerWorld?, entity: PassiveEntity?): PassiveEntity? {
+        return null
     }
 
     companion object {

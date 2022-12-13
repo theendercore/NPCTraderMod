@@ -1,10 +1,13 @@
 {
-  "item.npctrader.trader_spawn_egg": "Trader Spawn Egg",
+  "item.npctrader.butcher_spawn_egg": "Butcher Spawn Egg",
   "item.npctrader.currency": "Dollar",
 
+
+  "entity.npctrader.butcher": "Butcher",
+
+
   "npctrader.currency.name": "Dollar",
-  "npctrader.currency.symbol": "$",
+  "npctrader.currency.symbol": "$"
 
 
-  "npctrader.trader.butcher.name": "Butcher"
 }

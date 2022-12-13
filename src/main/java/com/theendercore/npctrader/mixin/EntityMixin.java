@@ -12,21 +12,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IEntityCurrency {
-    private long currency = 0L;
+    private int currency = 0;
 
     @Override
-    public long getCurrency() {
+    public int getCurrency() {
         return currency;
     }
 
     @Override
-    public void addCurrency(Long amount) {
+    public void addCurrency(int amount) {
         this.currency += amount;
     }
 
     @Override
-    public void removeCurrency(Long amount) {
+    public void removeCurrency(int amount) {
         this.currency -= amount;
+    }
+
+    @Override
+    public void setCurrency(int amount) {
+        this.currency = amount;
     }
 
     @Inject(method = "writeNbt", at = @At("HEAD"))
@@ -36,6 +41,6 @@ public abstract class EntityMixin implements IEntityCurrency {
 
     @Inject(method = "readNbt", at = @At("HEAD"))
     protected void readCurrency(NbtCompound nbt, CallbackInfo ci) {
-        currency = nbt.getLong("Currency");
+        currency = nbt.getInt("Currency");
     }
 }

@@ -1,25 +1,30 @@
 package com.theendercore.npctrader.screen
 
+import com.mojang.blaze3d.systems.RenderSystem
 import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.entity.TraderEntity
+import com.theendercore.npctrader.id
 import com.theendercore.npctrader.trades.TradeList
+import com.theendercore.npctrader.trades.TradeManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity
 import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.util.NarratorManager
+import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 
 @Environment(EnvType.CLIENT)
-class TraderScreen(private val trader: TraderEntity) : Screen(NarratorManager.EMPTY) {
-    private val backgroundWidth = 250
-    private val backgroundHeight = 100
-    private val x: Int = (this.width - this.backgroundWidth) / 2
-    private val y: Int =(this.height - this.backgroundHeight) / 2
-    private val traderName: Text = trader.name
-    private val trades: TradeList? = trader.trades
+class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
+    private val GUI_TEXTURE = id("textures/gui/trader.png")
+    private val backgroundWidth = 256
+    private val backgroundHeight = 166
+    private var x = 0
+    private var y = 0
+    private val titleX = 6
+    private val titleY = 6
+    private val trades: TradeList? = TradeManager.getTrades(trader.type)
     private var closeButton: ButtonWidget? = null
     private var open = true
     private var mouseX = 0
@@ -27,9 +32,8 @@ class TraderScreen(private val trader: TraderEntity) : Screen(NarratorManager.EM
 
 
     override fun init() {
-
-        client!!.keyboard.setRepeatEvents(true)
-
+        x = (this.width - this.backgroundWidth) / 2
+        y = (this.height - this.backgroundHeight) / 2
         closeButton = (addDrawableChild(
             ButtonWidget(width - (width / 8),
                 (height / 8),
@@ -53,32 +57,32 @@ class TraderScreen(private val trader: TraderEntity) : Screen(NarratorManager.EM
         this.mouseX = mouseX
         this.mouseY = mouseY
 
-        drawCenteredText(matrices, textRenderer, traderName, width / 3, height / 8, 0xffffff)
-        drawCenteredText(
+        textRenderer.draw(matrices, title, x + titleX.toFloat(), y + titleY.toFloat(), 4210752)
+        textRenderer.draw(
             matrices,
-            textRenderer,
             Text.of("" + this.client?.player?.let { CURRENCY.get(it).getValue() }),
-            width / 3 + 40,
-            height / 8 + 20,
+            x + this.backgroundWidth.toFloat(),
+            y + titleY.toFloat(),
             0xffffff
         )
 
-        if (trades != null) {
-            for (trade in trades) {
-                val xOne = width / 4
-                val yOne = height / 2 + ((trades.indexOf(trade) - 1) * 15)
-                itemRenderer.renderInGuiWithOverrides(trade?.itemStack, xOne - 15, yOne - 5)
-                drawCenteredText(
-                    matrices,
-                    textRenderer,
-                    Text.translatable("npctrader.currency.symbol").append(" " + trade?.price.toString()),
-                    xOne + 15,
-                    yOne,
-                    0x006400
-                )
+        /*
+                if (trades != null) {
+                    for (trade in trades) {
+                        val xOne = width / 4
+                        val yOne = height / 2 + ((trades.indexOf(trade) - 1) * 15)
+                        itemRenderer.renderInGuiWithOverrides(trade?.itemStack, xOne - 15, yOne - 5)
+                        drawCenteredText(
+                            matrices,
+                            textRenderer,
+                            Text.translatable("npctrader.currency.symbol").append(" " + trade?.price.toString()),
+                            xOne + 15,
+                            yOne,
+                            0x006400
+                        )
 
-            }
-        }
+                    }
+                }*/
 
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)
@@ -87,15 +91,24 @@ class TraderScreen(private val trader: TraderEntity) : Screen(NarratorManager.EM
     override fun renderBackground(matrices: MatrixStack?) {
         super.renderBackground(matrices)
 
-
         drawEntity(
-            width / 2 + 51,
-            height / 2 + 75,
-            40,
-            (x + 51).toFloat() - mouseX,
-            (y + 75 - 50).toFloat() - mouseY,
+            x + 225,
+            y + 165,
+            55,
+            (x + 225).toFloat() - mouseX,
+            (y + 165 - 100).toFloat() - mouseY,
             this.trader
         )
+
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.setShaderTexture(0, GUI_TEXTURE)
+
+        val i = x
+        val j = y
+        this.drawTexture(matrices, i, j, 0, 0, backgroundWidth, backgroundHeight)
+
+
     }
 
     private fun updateButtons() {

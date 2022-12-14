@@ -12,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 
 @Environment(EnvType.CLIENT)
-class TraderScreen(private val trader: TraderEntity, private val currency: Int) : Screen(NarratorManager.EMPTY) {
+class TraderScreen(private val trader: TraderEntity, private val currency: Long) : Screen(NarratorManager.EMPTY) {
     private var x: Int = 250
     private var y: Int = 125
     private val traderName: Text = trader.name

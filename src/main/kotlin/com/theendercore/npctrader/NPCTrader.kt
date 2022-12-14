@@ -1,23 +1,23 @@
 package com.theendercore.npctrader
 
+import com.theendercore.npctrader.data.CurrencyComponent
 import com.theendercore.npctrader.entity.*
 import com.theendercore.npctrader.entity.client.TraderRenderer
-import com.theendercore.npctrader.networking.packet.ModPackets
 import com.theendercore.npctrader.networking.packet.ModPacketsC2S
-import com.theendercore.npctrader.networking.packet.s2c.SyncCurrencyS2CPacket
 import com.theendercore.npctrader.trades.TradeManager
+import dev.onyxstudios.cca.api.v3.component.ComponentKey
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistry
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricDefaultAttributeRegistry
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.minecraft.client.render.entity.EntityRendererFactory
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.SpawnEggItem
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.resource.ResourceType
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import org.slf4j.Logger
@@ -36,8 +36,14 @@ val BUTCHER_SPAWN_EGG =
     SpawnEggItem(TraderEntities.BUTCHER, 0xffffff, 0xff0000, FabricItemSettings().group(ItemGroup.MISC).maxCount(3))
 
 @JvmField
-val CURRENCY = CurrencyItem(FabricItemSettings().group(ItemGroup.MISC))
+val CURRENCY_ITEM = CurrencyItem(FabricItemSettings().group(ItemGroup.MISC))
 
+
+@JvmField
+val CURRENCY: ComponentKey<CurrencyComponent> = ComponentRegistry.getOrCreate(
+    id("currency"),
+    CurrencyComponent::class.java
+)
 
 @Suppress("unused")
 fun onInitialize() {
@@ -45,15 +51,11 @@ fun onInitialize() {
 
     GeckoLib.initialize()
     Registry.register(Registry.ITEM, id("butcher_spawn_egg"), BUTCHER_SPAWN_EGG)
-    Registry.register(Registry.ITEM, id("currency"), CURRENCY)
+    Registry.register(Registry.ITEM, id("currency_item"), CURRENCY_ITEM)
 
     FabricDefaultAttributeRegistry.register(TraderEntities.BUTCHER, TraderEntity.setAttributes())
     TradeManager.registerTrader(TraderEntities.BUTCHER)
     ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TradeManager)
-
-    ServerTickEvents.END_SERVER_TICK.register {
-        sync(it.playerManager.playerList)
-    }
 }
 
 
@@ -65,10 +67,9 @@ fun onClientInitialize() {
     ModPacketsC2S.register()
 }
 
-fun sync(players: List<ServerPlayerEntity?>) {
-    players.forEach { player: ServerPlayerEntity? ->
-        ServerPlayNetworking.send(
-            player, ModPackets.SYNC_CURRENCY, PacketByteBuf(SyncCurrencyS2CPacket(player).toBuf())
-        )
-    }
+
+@Suppress("unused")
+fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
+    registry.registerForPlayers(CURRENCY, { p: PlayerEntity -> CurrencyComponent(p) }, RespawnCopyStrategy.ALWAYS_COPY)
 }
+

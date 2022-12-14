@@ -1,5 +1,6 @@
 package com.theendercore.npctrader.entity
 
+import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.networking.packet.ModPackets
 import com.theendercore.npctrader.networking.packet.s2c.TradeMenuS2CPacket
 import com.theendercore.npctrader.trades.TradeList
@@ -85,7 +86,7 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
 
     override fun interactMob(player: PlayerEntity, hand: Hand?): ActionResult? {
         if (!world.isClient) {
-            ServerPlayNetworking.send(player as ServerPlayerEntity?, ModPackets.START_TRADE, TradeMenuS2CPacket((player as IEntityCurrency).getCurrency(), this.id).toBuf())
+            ServerPlayNetworking.send(player as ServerPlayerEntity?, ModPackets.START_TRADE, TradeMenuS2CPacket(CURRENCY.get(player).getCurrency(), this.id).toBuf())
         }
         player.playSound(SoundEvents.ENTITY_FOX_SCREECH, 1F, 1F)
         return ActionResult.success(world.isClient)

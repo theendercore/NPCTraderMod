@@ -22,6 +22,12 @@
         "adapter": "kotlin",
         "value": "com.theendercore.npctrader.NPCTraderKt::onClientInitialize"
       }
+    ],
+    "cardinal-components-entity": [
+      {
+        "adapter": "kotlin",
+        "value": "com.theendercore.npctrader.NPCTraderKt::registerEntityComponentFactories"
+      }
     ]
   },
   "mixins": [
@@ -33,5 +39,10 @@
     "fabric-language-kotlin": ">=1.8.5+kotlin.1.7.20",
     "minecraft": "~1.19",
     "java": ">=17"
+  },
+  "custom": {
+    "cardinal-components": [
+      "npctrader:currency"
+    ]
   }
 }

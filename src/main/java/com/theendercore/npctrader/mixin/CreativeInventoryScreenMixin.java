@@ -1,6 +1,5 @@
 package com.theendercore.npctrader.mixin;
 
-import com.theendercore.npctrader.entity.IEntityCurrency;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen.CreativeScreenHandler;
@@ -13,6 +12,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static com.theendercore.npctrader.NPCTraderKt.CURRENCY;
 
 
 @Mixin(CreativeInventoryScreen.class)
@@ -34,9 +35,9 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
             assert client != null;
             assert client.player != null;
             this.textRenderer.drawWithShadow(matrices,
-                    Text.translatable("npctrader.currency.symbol").append(" " + ((IEntityCurrency) client.player).getCurrency()),
-                    (float) this.titleX + ((float) width/40)*10,
-                    (float) this.titleY + ((float) height/20)*4, 0x0fff0f);
+                    Text.translatable("npctrader.currency.symbol").append(" " + CURRENCY.get(this.client.player).getCurrency()),
+                    (float) (width / 2 + width / 20),
+                    (float) (height / 2 + height / 10), 0x0fff0f);
         }
     }
 }

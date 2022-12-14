@@ -17,11 +17,11 @@ class CurrencyComponent(private val provider: PlayerEntity) : Component, AutoSyn
         tag.putLong("Currency", currency)
     }
 
-    fun getCurrency(): Long {
+    fun getValue(): Long {
         return currency
     }
 
-    private fun setCurrency(currency: Long) {
+    private fun set(currency: Long) {
         this.currency = currency
 
         //Update Client
@@ -29,10 +29,10 @@ class CurrencyComponent(private val provider: PlayerEntity) : Component, AutoSyn
             CURRENCY.sync(provider)
         }
     }
-    fun addCurrency(currency: Long) {
-       setCurrency(this.currency+currency)
+    fun add(currency: Long) {
+        set(this.currency+currency)
     }
-    fun removeCurrency(currency: Long) {
-        setCurrency(this.currency-currency)
+    fun remove(currency: Long) {
+        set(this.currency-currency)
     }
 }

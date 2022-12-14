@@ -3,7 +3,6 @@ package com.theendercore.npctrader
 import com.theendercore.npctrader.data.CurrencyComponent
 import com.theendercore.npctrader.entity.*
 import com.theendercore.npctrader.entity.client.TraderRenderer
-import com.theendercore.npctrader.networking.packet.ModPacketsC2S
 import com.theendercore.npctrader.trades.TradeManager
 import dev.onyxstudios.cca.api.v3.component.ComponentKey
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry
@@ -51,7 +50,7 @@ fun onInitialize() {
 
     GeckoLib.initialize()
     Registry.register(Registry.ITEM, id("butcher_spawn_egg"), BUTCHER_SPAWN_EGG)
-    Registry.register(Registry.ITEM, id("currency_item"), CURRENCY_ITEM)
+    Registry.register(Registry.ITEM, id("currency"), CURRENCY_ITEM)
 
     FabricDefaultAttributeRegistry.register(TraderEntities.BUTCHER, TraderEntity.setAttributes())
     TradeManager.registerTrader(TraderEntities.BUTCHER)
@@ -63,8 +62,6 @@ fun onInitialize() {
 fun onClientInitialize() {
     LOGGER.info(":gun: Client")
     EntityRendererRegistry.register(TraderEntities.BUTCHER) { c: EntityRendererFactory.Context? -> TraderRenderer(c) }
-
-    ModPacketsC2S.register()
 }
 
 

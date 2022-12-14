@@ -1,5 +1,6 @@
 package com.theendercore.npctrader.mixin;
 
+import com.theendercore.npctrader.NPCTraderKt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
@@ -30,7 +31,14 @@ public class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHa
     public void drawForeground(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
         assert client != null;
         assert client.player != null;
-        this.textRenderer.drawWithShadow(matrices, Text.translatable("npctrader.currency.symbol").append(" " + CURRENCY.get(this.client.player).getCurrency()), (float) this.titleX + 35, (float) this.titleY + 60, 0x0fff0f);
+        int thisX = this.titleX + 33;
+        int thisY = this.titleY + 55;
+        this.itemRenderer.renderGuiItemIcon(NPCTraderKt.CURRENCY_ITEM.getDefaultStack(), thisX, thisY);
+        this.textRenderer.drawWithShadow(matrices,
+                Text.of("" + CURRENCY.get(this.client.player).getValue()),
+                (long) thisX + 17,
+                (long) thisY + 4,
+                0x006400);
     }
 
     @Shadow

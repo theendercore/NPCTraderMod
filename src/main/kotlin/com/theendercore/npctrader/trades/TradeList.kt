@@ -4,7 +4,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import net.minecraft.item.ItemStack
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.util.Identifier
 import net.minecraft.util.JsonHelper
 import net.minecraft.util.registry.Registry
@@ -12,6 +11,7 @@ import net.minecraft.util.registry.Registry
 
 @Suppress("Unused")
 class TradeList constructor(size: Int) : ArrayList<Trade?>(size) {
+    /*
     fun toPacket(buf: PacketByteBuf) {
         buf.writeCollection( /* collection = */ this, /* writer = */ { buf2: PacketByteBuf, trade: Trade ->
             buf2.writeItemStack(trade.itemStack)
@@ -26,7 +26,7 @@ class TradeList constructor(size: Int) : ArrayList<Trade?>(size) {
             Trade(item, l)
         } as TradeList
     }
-
+*/
 
     class Builder {
         private var trades: TradeList = TradeList(0)
@@ -44,4 +44,5 @@ class TradeList constructor(size: Int) : ArrayList<Trade?>(size) {
 
         fun build() = trades.clone()
     }
+
 }

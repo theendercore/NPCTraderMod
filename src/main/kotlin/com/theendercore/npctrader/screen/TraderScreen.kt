@@ -1,5 +1,6 @@
 package com.theendercore.npctrader.screen
 
+import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.trades.TradeList
 import net.fabricmc.api.EnvType
@@ -12,9 +13,11 @@ import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
 
 @Environment(EnvType.CLIENT)
-class TraderScreen(private val trader: TraderEntity, private val currency: Long) : Screen(NarratorManager.EMPTY) {
-    private var x: Int = 250
-    private var y: Int = 125
+class TraderScreen(private val trader: TraderEntity) : Screen(NarratorManager.EMPTY) {
+    private val backgroundWidth = 250
+    private val backgroundHeight = 100
+    private val x: Int = (this.width - this.backgroundWidth) / 2
+    private val y: Int =(this.height - this.backgroundHeight) / 2
     private val traderName: Text = trader.name
     private val trades: TradeList? = trader.trades
     private var closeButton: ButtonWidget? = null
@@ -51,7 +54,14 @@ class TraderScreen(private val trader: TraderEntity, private val currency: Long)
         this.mouseY = mouseY
 
         drawCenteredText(matrices, textRenderer, traderName, width / 3, height / 8, 0xffffff)
-        drawCenteredText(matrices, textRenderer, Text.of(this.currency.toString()), width / 3 + 40, height / 8 + 20, 0xffffff)
+        drawCenteredText(
+            matrices,
+            textRenderer,
+            Text.of("" + this.client?.player?.let { CURRENCY.get(it).getValue() }),
+            width / 3 + 40,
+            height / 8 + 20,
+            0xffffff
+        )
 
         if (trades != null) {
             for (trade in trades) {
@@ -64,7 +74,7 @@ class TraderScreen(private val trader: TraderEntity, private val currency: Long)
                     Text.translatable("npctrader.currency.symbol").append(" " + trade?.price.toString()),
                     xOne + 15,
                     yOne,
-                    0x0fffff
+                    0x006400
                 )
 
             }
@@ -73,6 +83,7 @@ class TraderScreen(private val trader: TraderEntity, private val currency: Long)
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)
     }
+
     override fun renderBackground(matrices: MatrixStack?) {
         super.renderBackground(matrices)
 

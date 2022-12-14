@@ -10,7 +10,7 @@ import net.minecraft.world.World
 class CurrencyItem constructor(settings: FabricItemSettings) : Item(settings) {
     override fun inventoryTick(stack: ItemStack, world: World?, entity: Entity, slot: Int, selected: Boolean) {
         if (entity is PlayerEntity){
-            CURRENCY.get(entity).addCurrency(stack.count.toLong())
+            CURRENCY.get(entity).add(stack.count.toLong())
             stack.decrement(stack.count)
         }
     }

@@ -1,12 +1,10 @@
 package com.theendercore.npctrader.entity
 
-import com.theendercore.npctrader.CURRENCY
-import com.theendercore.npctrader.networking.packet.ModPackets
-import com.theendercore.npctrader.networking.packet.s2c.TradeMenuS2CPacket
+import com.theendercore.npctrader.screen.TraderScreen
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.minecraft.block.BlockState
+import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.EntityType
 import net.minecraft.entity.ai.goal.*
 import net.minecraft.entity.attribute.DefaultAttributeContainer
@@ -14,7 +12,6 @@ import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.damage.DamageSource
 import net.minecraft.entity.passive.PassiveEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
@@ -85,8 +82,8 @@ class TraderEntity constructor(entityType: EntityType<out PassiveEntity?>?, worl
     }
 
     override fun interactMob(player: PlayerEntity, hand: Hand?): ActionResult? {
-        if (!world.isClient) {
-            ServerPlayNetworking.send(player as ServerPlayerEntity?, ModPackets.START_TRADE, TradeMenuS2CPacket(CURRENCY.get(player).getCurrency(), this.id).toBuf())
+        if (world.isClient){
+            MinecraftClient.getInstance().setScreen(TraderScreen(this))
         }
         player.playSound(SoundEvents.ENTITY_FOX_SCREECH, 1F, 1F)
         return ActionResult.success(world.isClient)

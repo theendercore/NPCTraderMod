@@ -1,5 +1,6 @@
 package com.theendercore.npctrader.mixin;
 
+import com.theendercore.npctrader.NPCTraderKt;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen.CreativeScreenHandler;
@@ -34,10 +35,14 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
         if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
             assert client != null;
             assert client.player != null;
+            int i = this.x + 135;
+            int j = this.y + 35;
+            this.itemRenderer.renderGuiItemIcon(NPCTraderKt.CURRENCY_ITEM.getDefaultStack(), i, j);
             this.textRenderer.drawWithShadow(matrices,
-                    Text.translatable("npctrader.currency.symbol").append(" " + CURRENCY.get(this.client.player).getCurrency()),
-                    (float) (width / 2 + width / 20),
-                    (float) (height / 2 + height / 10), 0x0fff0f);
+                    Text.of("" + CURRENCY.get(this.client.player).getValue()),
+                    i + 17,
+                    j+ 4,
+                    0x006400);
         }
     }
 }

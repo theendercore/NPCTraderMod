@@ -5,17 +5,18 @@ import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.LOGGER
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.id
+import com.theendercore.npctrader.networking.NPCTraderNetworking.BUY_FROM_TRADER
 import com.theendercore.npctrader.trades.Trade
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder
 import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
@@ -31,7 +32,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     private val titleX = 6
     private val titleY = 6
     private var trades: TradeList? = TradeManager.getTrades(trader.type)
-    private val tradeButtons: ArrayList<ShopButtonWidget> = ArrayList(0)
+    private var tradeButtons: ArrayList<ShopButtonWidget> = ArrayList(0)
     private var closeButton: ButtonWidget? = null
     private var mouseX = 0
     private var mouseY = 0
@@ -55,14 +56,17 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         ) as ButtonWidget)
         var j = 0
         var i = 0
+        tradeButtons = ArrayList(0)
         for (trade in trades!!) {
             if (i > 4) {
                 j++
                 i = 0
             }
             tradeButtons.add(
-                ShopButtonWidget(
-                    x + 6 + i * 25, y + 15 + j * 25, trade!!, textRenderer, itemRenderer
+                addDrawableChild(
+                    ShopButtonWidget(
+                        x + 6 + i * 25, y + 15 + j * 25, trade!!, textRenderer, itemRenderer
+                    )
                 )
             )
             i++
@@ -83,29 +87,6 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
             y + titleY.toFloat(),
             0xffffff
         )
-
-        for (button in tradeButtons) {
-            button.render(matrices, mouseX, mouseY, delta)
-        }
-
-        /*
-                if (trades != null) {
-                    for (trade in trades) {
-                        val xOne = width / 4
-                        val yOne = height / 2 + ((trades.indexOf(trade) - 1) * 15)
-                        itemRenderer.renderInGuiWithOverrides(trade?.itemStack, xOne - 15, yOne - 5)
-                        drawCenteredText(
-                            matrices,
-                            textRenderer,
-                            Text.translatable("npctrader.currency.symbol").append(" " + trade?.price.toString()),
-                            xOne + 15,
-                            yOne,
-                            0x006400
-                        )
-
-                    }
-                }*/
-
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)
     }
@@ -115,16 +96,10 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         drawEntity(
             x + 225, y + 165, 55, (x + 225).toFloat() - mouseX, (y + 165 - 100).toFloat() - mouseY, this.trader
         )
-
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, GUI_TEXTURE)
 
-        val i = x
-        val j = y
-        this.drawTexture(matrices, i, j, 0, 0, backgroundWidth, backgroundHeight)
-
-
+        this.drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight)
     }
 
 
@@ -135,42 +110,31 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         private val trade: Trade,
         private val textRenderer: TextRenderer,
         private val itemRenderer: ItemRenderer,
-    ) : ButtonWidget(x, y, 25, 25, trade.itemStack.name, { _: ButtonWidget? ->
-        LOGGER.info("click")
+    ) : ButtonWidget(x, y, 25, 25, trade.itemStack.name, { _: ButtonWidget ->
+        LOGGER.info("buy - "+ trade.itemStack.name.content.toString())
+        ClientPlayNetworking.send(BUY_FROM_TRADER, trade.toBuf())
     }) {
-        override fun renderButton(matrices: MatrixStack?, mouseX: Int, mouseY: Int, delta: Float) {
-            if (matrices != null) {
-                if (isHovered) {
-                    drawSelectionBox(matrices)
-                } else {
-                    this.drawBackground(matrices)
-                }
+        override fun renderButton(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
+            val v = if (active && this.isHovered) 216f else 166f
 
-                itemRenderer.renderGuiItemIcon(trade.itemStack, x + 3, y + 3)
-                textRenderer.draw(
-                    matrices, Text.of(trade.price.toString() + " $"), (x + 3).toFloat(), (y + 10).toFloat(), 0xffffff
-                )
+            this.drawBackground(matrices, v)
 
-            }
-
+            itemRenderer.renderGuiItemIcon(trade.itemStack, x + 2, y + 2)
+            matrices.translate(0.0, 0.0, (zOffset + 200.0f).toDouble())
+            textRenderer.draw(
+                matrices,
+                Text.of(trade.price.toString() + "$"),
+                (x + 10 - (trade.price.toString().length - 1) * 5).toFloat(),
+                (y + 14).toFloat(),
+                0xffffff
+            )
+            matrices.translate(0.0, 0.0, (zOffset - 200.0f).toDouble())
         }
+
         override fun appendNarrations(builder: NarrationMessageBuilder) {}
-        private fun drawBackground(matrices: MatrixStack) {
-            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        private fun drawBackground(matrices: MatrixStack, v: Float) {
             RenderSystem.setShaderTexture(0, GUI_TEXTURE)
-            matrices.push()
-            matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            drawTexture(matrices, 0, 0, 0.0f, 166.0f, 25, 25, 256, 256)
-            matrices.pop()
-        }
-
-        private fun drawSelectionBox(matrices: MatrixStack) {
-            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-            RenderSystem.setShaderTexture(0, GUI_TEXTURE)
-            matrices.push()
-            matrices.translate(x.toDouble(), y.toDouble(), 0.0)
-            drawTexture(matrices, 0, 0, 0.0f, 216.0f, 25, 25, 256, 256)
-            matrices.pop()
+            drawTexture(matrices, x, y, 0.0f, v, 25, 25, 256, 256)
         }
     }
 

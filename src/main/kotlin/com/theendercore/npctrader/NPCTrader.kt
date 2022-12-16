@@ -3,6 +3,7 @@ package com.theendercore.npctrader
 import com.theendercore.npctrader.data.CurrencyComponent
 import com.theendercore.npctrader.entity.*
 import com.theendercore.npctrader.entity.client.TraderRenderer
+import com.theendercore.npctrader.networking.NPCTraderNetworking
 import com.theendercore.npctrader.trades.TradeManager
 import dev.onyxstudios.cca.api.v3.component.ComponentKey
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistry
@@ -55,6 +56,8 @@ fun onInitialize() {
     FabricDefaultAttributeRegistry.register(TraderEntities.BUTCHER, TraderEntity.setAttributes())
     TradeManager.registerTrader(TraderEntities.BUTCHER)
     ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TradeManager)
+
+    NPCTraderNetworking.registerC2S()
 }
 
 

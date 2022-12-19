@@ -2,10 +2,10 @@ package com.theendercore.npctrader.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
 import com.theendercore.npctrader.CURRENCY
-import com.theendercore.npctrader.LOGGER
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.id
 import com.theendercore.npctrader.networking.NPCTraderNetworking.BUY_FROM_TRADER
+import com.theendercore.npctrader.screen.CurrencyDisplay.render
 import com.theendercore.npctrader.trades.Trade
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
@@ -80,13 +80,12 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         this.mouseY = mouseY
 
         textRenderer.draw(matrices, title, x + titleX.toFloat(), y + titleY.toFloat(), 4210752)
-        textRenderer.draw(
+
+        render(
             matrices,
-            Text.of("" + this.client?.player?.let { CURRENCY.get(it).getValue() }),
-            x + this.backgroundWidth.toFloat(),
-            y + titleY.toFloat(),
-            0xffffff
+            itemRenderer, textRenderer, CURRENCY[client!!.player!!].getValue(), x+ backgroundWidth, y, this
         )
+
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)
     }
@@ -111,7 +110,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         private val textRenderer: TextRenderer,
         private val itemRenderer: ItemRenderer,
     ) : ButtonWidget(x, y, 25, 25, trade.itemStack.name, { _: ButtonWidget ->
-        LOGGER.info("buy - "+ trade.itemStack.name.content.toString())
+        RenderSystem.setShaderTexture(0, GUI_TEXTURE)
         ClientPlayNetworking.send(BUY_FROM_TRADER, trade.toBuf())
     }) {
         override fun renderButton(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {

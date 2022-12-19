@@ -32,7 +32,16 @@ class CurrencyComponent(private val provider: PlayerEntity) : Component, AutoSyn
     fun add(currency: Long) {
         set(this.currency+currency)
     }
-    fun remove(currency: Long) {
+    private fun remove(currency: Long) {
         set(this.currency-currency)
     }
+
+    fun tryRemove(currency: Long) : Boolean{
+        if (this.currency-currency >= 0) {
+            remove(currency)
+            return true
+        }
+        return false
+    }
+
 }

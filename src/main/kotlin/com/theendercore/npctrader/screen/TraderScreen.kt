@@ -5,7 +5,7 @@ import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.id
 import com.theendercore.npctrader.networking.NPCTraderNetworking.BUY_FROM_TRADER
-import com.theendercore.npctrader.screen.CurrencyDisplay.render
+import com.theendercore.npctrader.screen.CurrencyBarDisplay.render
 import com.theendercore.npctrader.trades.Trade
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
@@ -20,6 +20,7 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
+import java.text.NumberFormat
 import java.util.*
 
 
@@ -29,8 +30,8 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     private val backgroundHeight = 166
     private var x = 0
     private var y = 0
-    private val titleX = 6
-    private val titleY = 6
+    private val titleX = 90f
+    private val titleY = 3f
     private var trades: TradeList? = TradeManager.getTrades(trader.type)
     private var tradeButtons: ArrayList<ShopButtonWidget> = ArrayList(0)
     private var closeButton: ButtonWidget? = null
@@ -44,8 +45,8 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         closeButton = (addDrawableChild(
             ButtonWidget(width - (width / 9),
                 (height / 9),
-                20,
-                20,
+                16,
+                16,
                 Text.of("X"),
                 { _: ButtonWidget? -> close() },
                 { _: ButtonWidget, matrices: MatrixStack, x: Int, y: Int ->
@@ -65,7 +66,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
             tradeButtons.add(
                 addDrawableChild(
                     ShopButtonWidget(
-                        x + 6 + i * 25, y + 15 + j * 25, trade!!, textRenderer, itemRenderer
+                        x + 5 + i * 35, y + 17 + j * 35, trade!!, textRenderer, itemRenderer
                     )
                 )
             )
@@ -79,18 +80,30 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         this.mouseX = mouseX
         this.mouseY = mouseY
 
-        textRenderer.draw(matrices, title, x + titleX.toFloat(), y + titleY.toFloat(), 4210752)
+        textRenderer.draw(
+            matrices,
+            Text.translatable("npctrader.trader.shop"),
+            x + titleX,
+            y + titleY,
+            0x9f9f9f
+        )
+
+        matrices.translate(0.0, 0.0, (zOffset + 200.0f).toDouble())
+
+        textRenderer.draw(matrices, title, x + 198f, y + 124.5f, 0x9f9f9f)
+
+        matrices.translate(0.0, 0.0, (zOffset - 200.0f).toDouble())
 
         render(
             matrices,
-            itemRenderer, textRenderer, CURRENCY[client!!.player!!].getValue(), x+ backgroundWidth, y, this
+            itemRenderer, textRenderer, CURRENCY[client!!.player!!].getValue(), x + backgroundWidth, y, this
         )
 
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)
     }
 
-    override fun renderBackground(matrices: MatrixStack?) {
+    override fun renderBackground(matrices: MatrixStack) {
         super.renderBackground(matrices)
         drawEntity(
             x + 225, y + 165, 55, (x + 225).toFloat() - mouseX, (y + 165 - 100).toFloat() - mouseY, this.trader
@@ -104,36 +117,36 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
 
     @Environment(EnvType.CLIENT)
     class ShopButtonWidget(
-        x: Int,
-        y: Int,
-        private val trade: Trade,
+        x: Int, y: Int, private val trade: Trade,
         private val textRenderer: TextRenderer,
         private val itemRenderer: ItemRenderer,
-    ) : ButtonWidget(x, y, 25, 25, trade.itemStack.name, { _: ButtonWidget ->
+    ) : ButtonWidget(x, y, 32, 32, trade.itemStack.name, { _: ButtonWidget ->
         RenderSystem.setShaderTexture(0, GUI_TEXTURE)
         ClientPlayNetworking.send(BUY_FROM_TRADER, trade.toBuf())
+    }, { _: ButtonWidget, matrices: MatrixStack, _: Int, _: Int ->
+        textRenderer.draw(
+            matrices,
+            Text.of(NumberFormat.getIntegerInstance().format(100000000)),
+            x.toFloat(),
+            y.toFloat(),
+            0x9f9f9f
+        )
     }) {
         override fun renderButton(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
-            val v = if (active && this.isHovered) 216f else 166f
+            val v = if (active && this.isHovered) 198f else 166f
 
             this.drawBackground(matrices, v)
 
-            itemRenderer.renderGuiItemIcon(trade.itemStack, x + 2, y + 2)
+            itemRenderer.renderGuiItemIcon(trade.itemStack, x + 8, y + 8)
             matrices.translate(0.0, 0.0, (zOffset + 200.0f).toDouble())
-            textRenderer.draw(
-                matrices,
-                Text.of(trade.price.toString() + "$"),
-                (x + 10 - (trade.price.toString().length - 1) * 5).toFloat(),
-                (y + 14).toFloat(),
-                0xffffff
-            )
+            CurrencyTextRenderer.render(matrices, textRenderer, trade.price, x + 2, y + 23, 0xffffff, true)
             matrices.translate(0.0, 0.0, (zOffset - 200.0f).toDouble())
         }
 
         override fun appendNarrations(builder: NarrationMessageBuilder) {}
         private fun drawBackground(matrices: MatrixStack, v: Float) {
             RenderSystem.setShaderTexture(0, GUI_TEXTURE)
-            drawTexture(matrices, x, y, 0.0f, v, 25, 25, 256, 256)
+            drawTexture(matrices, x, y, 0.0f, v, 32, 32, 256, 256)
         }
     }
 

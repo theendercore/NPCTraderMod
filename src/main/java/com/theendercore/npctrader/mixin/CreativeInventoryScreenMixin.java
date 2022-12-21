@@ -1,6 +1,6 @@
 package com.theendercore.npctrader.mixin;
 
-import com.theendercore.npctrader.screen.CurrencyDisplay;
+import com.theendercore.npctrader.screen.CurrencyBarDisplay;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen.CreativeScreenHandler;
@@ -37,7 +37,7 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
             assert client.player != null;
             int i = this.x + 135;
             int j = this.y + 35;
-            CurrencyDisplay.INSTANCE.render(matrices, this.itemRenderer, this.textRenderer, CURRENCY.get(this.client.player).getValue(), i, j, this);
+            CurrencyBarDisplay.INSTANCE.render(matrices, this.itemRenderer, this.textRenderer, CURRENCY.get(this.client.player).getValue(), i, j, this);
         }
     }
 }

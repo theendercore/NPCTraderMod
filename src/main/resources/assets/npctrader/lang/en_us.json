@@ -7,7 +7,8 @@
 
 
   "npctrader.currency.name": "Dollar",
-  "npctrader.currency.symbol": "$"
+  "npctrader.currency.symbol": "$",
 
 
+  "npctrader.trader.shop": "Shop"
 }

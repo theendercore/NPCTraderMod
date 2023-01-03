@@ -11,15 +11,16 @@ import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder
 import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.text.Text
+import net.minecraft.util.Formatting
+import java.text.NumberFormat
 
 class CurrencyBarWidget(
     private val x: Int,
     private val y: Int,
     val client: MinecraftClient,
     val currency: Long,
-    val screen: Screen,
-) :
-    DrawableHelper(), Drawable, Element, Selectable {
+    private val screen: Screen,
+) : DrawableHelper(), Drawable, Element, Selectable {
 
     private val BACKGROUND = id("textures/gui/currency.png")
     private val width: Int = 64
@@ -28,7 +29,7 @@ class CurrencyBarWidget(
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, BACKGROUND)
         drawTexture(matrices, x, y, 0, 0, width, height)
-        CurrencyTextRenderer.render(matrices, client, currency, (x + 17), (y + 4), 0x006400)
+        CurrencyTextRenderer.render(matrices, client, currency, (x + 17), (y + 4), 5635925)
         if (isHovered(mouseX, mouseY)) {
             renderTooltip(matrices)
         }
@@ -42,7 +43,12 @@ class CurrencyBarWidget(
     }
 
     private fun renderTooltip(matrices: MatrixStack?) {
-        screen.renderTooltip(matrices, Text.of(currency.toString()), x, y + height + 10)
+        screen.renderTooltip(
+            matrices, Text.empty()
+                .append(NumberFormat.getIntegerInstance().format(currency))
+                .append(Text.translatable("npctrader.currency.symbol"))
+                .formatted(Formatting.GREEN), x - 4, y + height * 2 + 1
+        )
     }
 
     private fun isHovered(mouseX: Int, mouseY: Int): Boolean {

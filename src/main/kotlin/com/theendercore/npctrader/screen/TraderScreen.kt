@@ -25,7 +25,8 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     private val titleX = 90f
     private val titleY = 3f
     private var trades: TradeList? = TradeManager.getTrades(trader.type)
-    private var tradeButtons: ArrayList<TraderShopButton> = ArrayList(0)
+    private var tradeButtons: ArrayList<ShopButton> = ArrayList(0)
+    private var shopMenu: ShopMenu? = null
     private var closeButton: ButtonWidget? = null
     private var currencyBarWidget: CurrencyBarWidget? = null
     private var mouseX = 0
@@ -35,11 +36,9 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     override fun init() {
         x = (this.width - this.backgroundWidth) / 2
         y = (this.height - this.backgroundHeight) / 2
+
         closeButton = (addDrawableChild(
-            ButtonWidget(width - (width / 9),
-                (height / 9),
-                16,
-                16,
+            ButtonWidget(width - (width / 9), (height / 9), 16, 16,
                 Text.of("X"),
                 { _: ButtonWidget? -> close() },
                 { _: ButtonWidget, matrices: MatrixStack, x: Int, y: Int ->
@@ -48,24 +47,29 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
                     )
                 })
         ) as ButtonWidget)
-        var j = 0
-        var i = 0
-        tradeButtons = ArrayList(0)
-        for (trade in trades!!) {
-            if (i > 4) {
-                j++
-                i = 0
-            }
-            tradeButtons.add(
-                addDrawableChild(
-                    TraderShopButton(
-                        x + 5 + i * 35, y + 17 + j * 35, trade!!, client!!, itemRenderer
-                    )
-                )
-            )
-            i++
-        }
-        currencyBarWidget = CurrencyBarWidget(x + backgroundWidth, y, client!!, CURRENCY[client!!.player!!].getValue(), this)
+
+        shopMenu = ShopMenu(client!!, 172,150,x , y, 35)
+        addDrawableChild(shopMenu)
+
+//        var j = 0
+//        var i = 0
+//        tradeButtons = ArrayList(0)
+//        for (trade in trades!!) {
+//            if (i > 4) {
+//                j++
+//                i = 0
+//            }
+//            tradeButtons.add(
+//                addDrawableChild(
+//                    ShopButton(
+//                        x + 5 + i * 35, y + 17 + j * 35, trade!!, client!!, itemRenderer
+//                    )
+//                )
+//            )
+//            i++
+//        }
+        currencyBarWidget =
+            CurrencyBarWidget(x + backgroundWidth, y, client!!, CURRENCY[client!!.player!!].getValue(), this)
 
     }
 
@@ -95,7 +99,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     override fun renderBackground(matrices: MatrixStack) {
         super.renderBackground(matrices)
         drawEntity(
-            x + 210, y + 165, 55, (x + 210).toFloat() - mouseX, (y + 165 - 100).toFloat() - mouseY, this.trader
+            x + 210, y + 185, 55, (x + 210).toFloat() - mouseX, (y + 165 - 100).toFloat() - mouseY, this.trader
         )
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, GUI_TEXTURE)

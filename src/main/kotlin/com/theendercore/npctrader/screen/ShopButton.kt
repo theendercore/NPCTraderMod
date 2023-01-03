@@ -15,7 +15,7 @@ import net.minecraft.text.Text
 import java.text.NumberFormat
 
 @Environment(EnvType.CLIENT)
-class TraderShopButton(
+class ShopButton(
     x: Int, y: Int, private val trade: Trade,
     private val client: MinecraftClient,
     private val itemRenderer: ItemRenderer,

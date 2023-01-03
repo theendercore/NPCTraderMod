@@ -1,4 +1,4 @@
-# NPC Trader Mod [currency](src/main/resources/assets/npctrader/icon.png)
+# NPC Trader Mod ![currency](src/main/resources/assets/npctrader/icon.png)
 
 A mod to add trader to the game.
 

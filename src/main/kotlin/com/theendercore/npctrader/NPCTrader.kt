@@ -70,6 +70,6 @@ fun onClientInitialize() {
 
 @Suppress("unused")
 fun registerEntityComponentFactories(registry: EntityComponentFactoryRegistry) {
-    registry.registerForPlayers(CURRENCY, { p: PlayerEntity -> CurrencyComponent(p) }, RespawnCopyStrategy.ALWAYS_COPY)
+    registry.registerForPlayers(CURRENCY, { p: PlayerEntity -> CurrencyComponent(p) }, RespawnCopyStrategy.INVENTORY)
 }
 

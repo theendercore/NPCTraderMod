@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.id
-import com.theendercore.npctrader.screen.CurrencyBarDisplay.render
 import com.theendercore.npctrader.trades.TradeList
 import com.theendercore.npctrader.trades.TradeManager
 import net.fabricmc.api.EnvType
@@ -28,6 +27,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     private var trades: TradeList? = TradeManager.getTrades(trader.type)
     private var tradeButtons: ArrayList<TraderShopButton> = ArrayList(0)
     private var closeButton: ButtonWidget? = null
+    private var currencyBarWidget: CurrencyBarWidget? = null
     private var mouseX = 0
     private var mouseY = 0
 
@@ -59,12 +59,13 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
             tradeButtons.add(
                 addDrawableChild(
                     TraderShopButton(
-                        x + 5 + i * 35, y + 17 + j * 35, trade!!, textRenderer, itemRenderer
+                        x + 5 + i * 35, y + 17 + j * 35, trade!!, client!!, itemRenderer
                     )
                 )
             )
             i++
         }
+        currencyBarWidget = CurrencyBarWidget(x + backgroundWidth, y, client!!, CURRENCY[client!!.player!!].getValue(), this)
 
     }
 
@@ -85,10 +86,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         textRenderer.draw(matrices, title, x + 198f, y + 124.5f, 0x9f9f9f)
         matrices.translate(0.0, 0.0, (zOffset - 200.0f).toDouble())
 
-        render(
-            matrices,
-            itemRenderer, textRenderer, CURRENCY[client!!.player!!].getValue(), x + backgroundWidth, y, this
-        )
+        currencyBarWidget?.render(matrices, mouseX, mouseY, delta)
 
         //Don't remove this u fool
         super.render(matrices, mouseX, mouseY, delta)

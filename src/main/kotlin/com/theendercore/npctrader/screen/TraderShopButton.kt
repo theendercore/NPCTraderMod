@@ -6,7 +6,7 @@ import com.theendercore.npctrader.trades.Trade
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
-import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.render.item.ItemRenderer
@@ -17,13 +17,13 @@ import java.text.NumberFormat
 @Environment(EnvType.CLIENT)
 class TraderShopButton(
     x: Int, y: Int, private val trade: Trade,
-    private val textRenderer: TextRenderer,
+    private val client: MinecraftClient,
     private val itemRenderer: ItemRenderer,
 ) : ButtonWidget(x, y, 32, 32, trade.itemStack.name, { _: ButtonWidget ->
     RenderSystem.setShaderTexture(0, TraderScreen.GUI_TEXTURE)
     ClientPlayNetworking.send(NPCTraderNetworking.BUY_FROM_TRADER, trade.toBuf())
 }, { _: ButtonWidget, matrices: MatrixStack, _: Int, _: Int ->
-    textRenderer.draw(
+    client.textRenderer.draw(
         matrices,
         Text.of(NumberFormat.getIntegerInstance().format(100000000)),
         x.toFloat(),
@@ -38,7 +38,7 @@ class TraderShopButton(
 
         itemRenderer.renderGuiItemIcon(trade.itemStack, x + 8, y + 8)
         matrices.translate(0.0, 0.0, (zOffset + 200.0f).toDouble())
-        CurrencyTextRenderer.render(matrices, textRenderer, trade.price, x + 2, y + 23, 0xffffff, true)
+        CurrencyTextRenderer.render(matrices, client, trade.price, x + 2, y + 23, 0xffffff, true)
         matrices.translate(0.0, 0.0, (zOffset - 200.0f).toDouble())
     }
 

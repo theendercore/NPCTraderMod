@@ -1,6 +1,6 @@
 package com.theendercore.npctrader.mixin;
 
-import com.theendercore.npctrader.screen.CurrencyBarDisplay;
+import com.theendercore.npctrader.screen.CurrencyBarWidget;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen.CreativeScreenHandler;
@@ -22,6 +22,8 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
     @Shadow
     private static int selectedTab;
 
+    private static CurrencyBarWidget currencyBar;
+
     public CreativeInventoryScreenMixin(CreativeScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
     }
@@ -30,14 +32,22 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
     }
 
+    @Inject(method = "init", at = @At("TAIL"))
+    public void init(CallbackInfo ci) {
+
+        int i = this.x + 135;
+        int j = this.y + 35;
+        assert client != null;
+        assert this.client.player != null;
+        currencyBar = new CurrencyBarWidget(i, j, client, CURRENCY.get(this.client.player).getValue(), this);
+    }
+
     @Inject(method = "render", at = @At("TAIL"))
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
             assert client != null;
             assert client.player != null;
-            int i = this.x + 135;
-            int j = this.y + 35;
-            CurrencyBarDisplay.INSTANCE.render(matrices, this.itemRenderer, this.textRenderer, CURRENCY.get(this.client.player).getValue(), i, j, this);
+            currencyBar.render(matrices, mouseX, mouseY, delta);
         }
     }
 }

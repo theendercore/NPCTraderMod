@@ -1,6 +1,6 @@
 package com.theendercore.npctrader.mixin;
 
-import com.theendercore.npctrader.screen.CurrencyBarDisplay;
+import com.theendercore.npctrader.screen.CurrencyBarWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
@@ -23,21 +23,32 @@ import static com.theendercore.npctrader.NPCTraderKt.CURRENCY;
 @Mixin(InventoryScreen.class)
 public class InventoryScreenMixin extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
 
+    private static CurrencyBarWidget currencyBar;
+
     public InventoryScreenMixin(PlayerScreenHandler screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
     }
 
-    @Inject(method = "drawForeground", at = @At("TAIL"))
-    public void drawForeground(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
+    @Inject(method = "init", at = @At("TAIL"))
+    public void init(CallbackInfo ci) {
+        int i = this.titleX + 33;
+        int j = this.titleY + 55;
+        assert client != null;
+        assert this.client.player != null;
+        currencyBar = new CurrencyBarWidget(i, j, client, CURRENCY.get(this.client.player).getValue(), this);
+    }
+
+    @Inject(method = "render", at = @At("TAIL"))
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         assert client != null;
         assert client.player != null;
-        int thisX = this.titleX + 33;
-        int thisY = this.titleY + 55;
-        CurrencyBarDisplay.INSTANCE.render(matrices, this.itemRenderer, this.textRenderer, CURRENCY.get(this.client.player).getValue(), thisX, thisY, this);
+        currencyBar.render(matrices, mouseX, mouseY, delta);
     }
+
 
     @Shadow
     public void refreshRecipeBook() {
+
     }
 
     @Shadow

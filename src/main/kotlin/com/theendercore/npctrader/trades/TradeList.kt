@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry
 
 
 @Suppress("Unused")
-class TradeList constructor(size: Int) : ArrayList<Trade?>(size) {
+class TradeList(size: Int) : ArrayList<Trade?>(size) {
     class Builder {
         private var trades: TradeList = TradeList(0)
 

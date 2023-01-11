@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.theendercore.npctrader.NPCTraderKt.CURRENCY;
 
 
 @Mixin(CreativeInventoryScreen.class)
@@ -39,7 +38,7 @@ public class CreativeInventoryScreenMixin extends AbstractInventoryScreen<Creati
         int j = this.y + 35;
         assert client != null;
         assert this.client.player != null;
-        currencyBar = new CurrencyBarWidget(i, j, client, CURRENCY.get(this.client.player).getValue(), this);
+        currencyBar = new CurrencyBarWidget(i, j, client, this.client.player, this);
     }
 
     @Inject(method = "render", at = @At("TAIL"))

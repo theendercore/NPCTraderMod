@@ -39,6 +39,62 @@
     {
       "item": "minecraft:honey_block",
       "price": 6
+    },
+    {
+      "item": "minecraft:oak_sapling",
+      "price": 6
+    },
+    {
+      "item": "minecraft:spruce_sapling",
+      "price": 6
+    },
+    {
+      "item": "minecraft:dark_oak_sapling",
+      "price": 6
+    },
+    {
+      "item": "minecraft:acacia_sapling",
+      "price": 6
+    },
+    {
+      "item": "minecraft:jungle_sapling",
+      "price": 6
+    },
+    {
+      "item": "minecraft:oak_log",
+      "price": 6
+    },
+    {
+      "item": "minecraft:birch_log",
+      "price": 6
+    },
+    {
+      "item": "minecraft:dark_oak_log",
+      "price": 6
+    },
+    {
+      "item": "minecraft:acacia_log",
+      "price": 6
+    },
+    {
+      "item": "minecraft:spruce_log",
+      "price": 6
+    },
+    {
+      "item": "minecraft:diamond_block",
+      "price": 6
+    },
+    {
+      "item": "minecraft:iron_block",
+      "price": 1000
+    },
+    {
+      "item": "minecraft:gold_block",
+      "price": 100
+    },
+    {
+      "item": "minecraft:emerald_block",
+      "price": 600
     }
   ]
 }

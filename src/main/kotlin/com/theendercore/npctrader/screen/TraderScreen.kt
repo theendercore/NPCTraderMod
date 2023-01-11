@@ -1,7 +1,6 @@
 package com.theendercore.npctrader.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.entity.TraderEntity
 import com.theendercore.npctrader.id
 import com.theendercore.npctrader.trades.TradeList
@@ -26,7 +25,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
     private val titleY = 3f
     private var trades: TradeList? = TradeManager.getTrades(trader.type)
     private var tradeButtons: ArrayList<ShopButton> = ArrayList(0)
-    private var shopMenu: ShopMenu? = null
+
     private var closeButton: ButtonWidget? = null
     private var currencyBarWidget: CurrencyBarWidget? = null
     private var mouseX = 0
@@ -38,7 +37,10 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         y = (this.height - this.backgroundHeight) / 2
 
         closeButton = (addDrawableChild(
-            ButtonWidget(width - (width / 9), (height / 9), 16, 16,
+            ButtonWidget(width - (width / 9),
+                (height / 9),
+                16,
+                16,
                 Text.of("X"),
                 { _: ButtonWidget? -> close() },
                 { _: ButtonWidget, matrices: MatrixStack, x: Int, y: Int ->
@@ -48,29 +50,33 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
                 })
         ) as ButtonWidget)
 
-        shopMenu = ShopMenu(client!!, 172,150,x , y, 35)
-        addDrawableChild(shopMenu)
-
-//        var j = 0
-//        var i = 0
-//        tradeButtons = ArrayList(0)
-//        for (trade in trades!!) {
-//            if (i > 4) {
-//                j++
-//                i = 0
-//            }
-//            tradeButtons.add(
-//                addDrawableChild(
-//                    ShopButton(
-//                        x + 5 + i * 35, y + 17 + j * 35, trade!!, client!!, itemRenderer
-//                    )
-//                )
-//            )
-//            i++
-//        }
         currencyBarWidget =
-            CurrencyBarWidget(x + backgroundWidth, y, client!!, CURRENCY[client!!.player!!].getValue(), this)
+            CurrencyBarWidget(x + backgroundWidth, y, client!!, client?.player!!, this)
 
+        var j = 0
+        var i = 0
+        tradeButtons = ArrayList(0)
+        for (trade in trades!!) {
+            if (i > 4) {
+                j++
+                i = 0
+            }
+            tradeButtons.add(addDrawableChild(ShopButton(x + 5 + i * 35, y + 17 + j * 35, trade!!, client!!)))
+            i++
+        }
+
+    }
+
+    private fun renderScrollbar(matrices: MatrixStack, x: Int, y: Int, tradeSize: Int) {
+        val i = tradeSize + 1 - 7
+        if (i > 1) {
+            val j = 139 - (27 + (i - 1) * 139 / i)
+            val k = 1 + j / i + 139 / i
+            val m = 113.coerceAtMost(k)
+            drawTexture(matrices, x +backgroundWidth, y + 18 + m, zOffset + 200, 32.0f, 166f, 2, 32, 256, 256)
+        } else {
+            drawTexture(matrices, x + backgroundWidth, y + 18, zOffset + 200, 34.0f, 166f, 2, 32, 256, 256)
+        }
     }
 
     override fun render(matrices: MatrixStack, mouseX: Int, mouseY: Int, delta: Float) {
@@ -79,11 +85,7 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
         this.mouseY = mouseY
 
         textRenderer.draw(
-            matrices,
-            Text.translatable("npctrader.trader.shop"),
-            x + titleX,
-            y + titleY,
-            0x9f9f9f
+            matrices, Text.translatable("npctrader.trader.shop"), x + titleX, y + titleY, 0x9f9f9f
         )
 
         matrices.translate(0.0, 0.0, (zOffset + 200.0f).toDouble())
@@ -92,14 +94,17 @@ class TraderScreen(private val trader: TraderEntity) : Screen(trader.name) {
 
         currencyBarWidget?.render(matrices, mouseX, mouseY, delta)
 
-        //Don't remove this u fool
+
+        renderScrollbar(matrices, x, y, tradeButtons.size)
+
+
         super.render(matrices, mouseX, mouseY, delta)
     }
 
     override fun renderBackground(matrices: MatrixStack) {
         super.renderBackground(matrices)
         drawEntity(
-            x + 210, y + 185, 55, (x + 210).toFloat() - mouseX, (y + 165 - 100).toFloat() - mouseY, this.trader
+            x + 215, y + 170, 55, (x + 215).toFloat() - mouseX, (y + 170 - 100).toFloat() - mouseY, this.trader
         )
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, GUI_TEXTURE)

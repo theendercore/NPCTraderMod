@@ -1,6 +1,7 @@
 package com.theendercore.npctrader.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
+import com.theendercore.npctrader.CURRENCY
 import com.theendercore.npctrader.id
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.Drawable
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.Selectable
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import java.text.NumberFormat
@@ -18,7 +20,7 @@ class CurrencyBarWidget(
     private val x: Int,
     private val y: Int,
     val client: MinecraftClient,
-    val currency: Long,
+    private val player: PlayerEntity,
     private val screen: Screen,
 ) : DrawableHelper(), Drawable, Element, Selectable {
 
@@ -29,7 +31,7 @@ class CurrencyBarWidget(
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, BACKGROUND)
         drawTexture(matrices, x, y, 0, 0, width, height)
-        CurrencyTextRenderer.render(matrices, client, currency, (x + 17), (y + 4), 5635925)
+        CurrencyTextRenderer.render(matrices, client, CURRENCY[player].getValue(), (x + 17), (y + 4), 5635925)
         if (isHovered(mouseX, mouseY)) {
             renderTooltip(matrices)
         }
@@ -45,7 +47,7 @@ class CurrencyBarWidget(
     private fun renderTooltip(matrices: MatrixStack?) {
         screen.renderTooltip(
             matrices, Text.empty()
-                .append(NumberFormat.getIntegerInstance().format(currency))
+                .append(NumberFormat.getIntegerInstance().format(CURRENCY[player].getValue()))
                 .append(Text.translatable("npctrader.currency.symbol"))
                 .formatted(Formatting.GREEN), x - 4, y + height * 2 + 1
         )
